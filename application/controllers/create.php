@@ -68,6 +68,9 @@ class Create extends CI_Controller {
                         $PostData[$key] = $PostData[$key]==""?null:$PostData[$key];
                     }
                 }
+                if(!isset($PostData['part_quantity'])){
+                	$PostData['part_quantity'] = '1';
+                }
                 if(isset($PostData['delivery_date']))
                     $PostData['delivery_date'] = date("Y-m-d", strtotime($PostData['delivery_date']));
                 if(isset($PostData['repair_date']))
@@ -77,6 +80,7 @@ class Create extends CI_Controller {
                 unset($PostData['draft']);
                 unset($PostData['action']);
                 unset($PostData['maker_name']);
+                unset($PostData['sd_id']);
                 // if (isset($PostData['maker_name'])) {
                 // 	$maker_name = $PostData['maker_name'];
                 // 	echo "UNSETTING IT";
