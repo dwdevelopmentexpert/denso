@@ -2,22 +2,22 @@
 <link rel="stylesheet" type="text/css" href="<?php echo base_url(); ?>application/assets/css/home.css">
 <link rel="stylesheet" type="text/css" href="<?php echo base_url(); ?>application/assets/css/jquery-ui-1.9.2.custom.min.css">
 <link rel="stylesheet" type="text/css" href="<?php echo base_url(); ?>application/assets/css/font-awesome.min.css">
-<!-- <link rel="stylesheet" type="text/css" href="<?php echo base_url(); ?>application/assets/css/jquery-ui.min.css"> -->
-<!-- <link rel="stylesheet" href="//code.jquery.com/ui/1.11.2/themes/smoothness/jquery-ui.css"> -->
-
+<link rel="stylesheet" type="text/css" href="<?php echo base_url(); ?>application/assets/css/select2.min.css">
+    
 
 <form method="POST" id="create_frm">
         <div id="tabs">
 	<div id="save_draft" title="<?php echo lang('create_save_draft'); ?>" data-action="<?php echo (isset($ros_info['ros_no']) AND $ros_info['status']=='Draft')?('update'):('add'); ?>"></div>
 	<div id="del_draft" title="<?php echo lang('create_delete_draft'); ?>" data-rosno="<?php echo (isset($ros_info['ros_no']) AND $ros_info['status']=='Draft')?($ros_info['ros_no']):('0'); ?>"></div>
         <div id="printform"></div>
+        <div id="searchform"></div>
 		<ul id="tabs_list">
 			<li><a href="#page_1"><?php echo lang('create_menu_dealer_info'); ?></a></li>
 			<li><a href="#page_2"><?php echo lang('create_menu_car_info'); ?></a></li>
 			<!-- <li><a href="#page_2"><?php //echo lang('create_menu_car_prob'); ?></a></li> -->
 			<!-- <li><a href="#page_3"><?php echo lang('create_menu_part_exchange'); ?></a></li> -->
 		</ul>
-		<div id="page_1" class="frm_part">
+                 <div id="page_1" class="frm_part">
 			<?php 
                             if($dealer_status===$user_role_admin) {
                                
@@ -27,7 +27,7 @@
 				<tr>
 					<td><?php echo lang('create_service_dealer_name'); ?></td>
                                         <td>
-                                            <select name="sd_id" id="sd_id" class="req_field">
+                                            <select name="sd_id" id="sd_id" class="select2">
                                                 <option value="<?php echo $this->session->userdata('sd_id')?>" selected="selected">
                                                         <?php if(isset($sd_info[lang('create_sd_name')])){
                                                             echo $sd_info[lang('create_sd_name')]; 
@@ -182,13 +182,13 @@
 						</select>
 					</td>
 					<td><?php echo lang('create_frame_number'); ?><span class="required">*</span></td>
-                                        <td style="white-space: nowrap;">
-                                            <input type="text" name="frame_no" placeholder="<?php echo lang('create_frame_number'); ?>" class="req_field">
-                                        </td>
+					<td style="white-space: nowrap;">
+						<input type="text" name="frame_no" placeholder="<?php echo lang('create_frame_number'); ?>" class="req_field">
+					</td>
 					<td><?php echo lang('create_engine_number'); ?><span class="required">*</span></td>
 					<td style="white-space: nowrap;">
-                                            <input type="text" name="engine_no" placeholder="<?php echo lang('create_engine_number'); ?>" class="req_field">
-                                        </td>
+                    	<input type="text" name="engine_no" placeholder="<?php echo lang('create_engine_number'); ?>" class="req_field">
+                  	</td>
 				</tr>
 				<tr>
 					<td></td>
@@ -197,7 +197,7 @@
                		<td><label><input type="checkbox" id="frame_indiscernible"/><?php echo lang('create_indiscernible'); ?></label></td>
                		<td></td>
                		<td><label><input type="checkbox" id="engine_indiscernible"/><?php echo lang('create_indiscernible'); ?></label></td>
-				</tr>
+				</tr>				
 				<tr class="empty_row"></tr>
 				<tr>
 					<td><?php echo lang('create_engine_model'); ?><span class="required">*</span></td>
@@ -279,11 +279,15 @@
 <script src="<?php echo base_url(); ?>application/assets/js/jquery-ui-1.9.2.custom.min.js"></script>
 <script src="<?php echo base_url(); ?>application/assets/js/jquery.datetimepicker.js"></script>
 <script src="<?php echo base_url(); ?>application/assets/js/jquery.deserialize.js"></script>
+<script src="<?php echo base_url(); ?>application/assets/js/bootstrap.min.js"></script>
+<script src="<?php echo base_url(); ?>application/assets/js/select2.min.js"></script>
+
 <!--script src="<?php echo base_url(); ?>application/assets/js/jquery-ui.min.js"></script-->
 <!--<script src="//code.jquery.com/jquery-1.10.2.js"></script>
   <script src="//code.jquery.com/ui/1.11.2/jquery-ui.js"></script>-->
 <script>
 	$(document).ready(function(){
+        $(".select2").select2();
         // SHOW SOME FANCY LOADING
 	var warranty_info = {};
         var frontd = '<option value="<?PHP echo $this->session->userdata("sd_id"); ?>"><?PHP if(isset($sd_info[lang('create_sd_name')])) echo $sd_info[lang('create_sd_name')]; ?></option>';
@@ -494,10 +498,12 @@
                 $("#engine_indiscernible").prop("checked", true);
                 $("input[name='engine_no']").prop("readonly", true);
             }
+
             if($("input[name='delivery_date']").val() == 'XXXXX'){
                 $("#chkbox_delivery_date").prop("checked", true);
                 $("input[name='delivery_date']").prop("readonly", true);
             }
+
             if($("input[name='mileage']").val() == 'XXXXX'){
                 $("#chkbox_mileage").prop("checked", true);
                 $("input[name='mileage']").prop("readonly", true);
@@ -530,6 +536,7 @@
                 	$("input[name='engine_no']").val('');
                 }
             }
+
             if($("#chkbox_delivery_date").is(':checked')){
                 $("input[name='delivery_date']").val('XXXXX');
                 delivery_date_change();
@@ -542,6 +549,7 @@
                 }
                 delivery_date_change();
             }
+
             if($("#chkbox_mileage").is(':checked')){
                 $("input[name='mileage']").val('XXXXX');
                 $("input[name='mileage']").prop("readonly", true);
@@ -552,6 +560,7 @@
                 	$("input[name='mileage']").val('');
                 }
             }
+
             mileage_change();
         }
         
@@ -702,10 +711,13 @@
 		}
 
 		$(document).on("change blur","input[name='delivery_date']",delivery_date_change);
+
+
 		function delivery_date_change(){
 			warranty_info["delivery_date"] = $("input[name='delivery_date']").val();
 			getwarranty();
 		}
+
 		$(document).on("change blur","input[name='mileage']",mileage_change);
 
 
@@ -922,7 +934,12 @@
 				}
 			});
 		});
-                
+
+        $('#searchform').on('click',function(){
+            alert('Opening new window to search function.');
+            window.open("<?php echo base_url(); ?>index.php/create/searchform");
+		});
+		          
             $('#printform').on('click',function(){
             alert('Opening new window to print!');
 			var form = $("#create_frm");
@@ -1132,7 +1149,7 @@
 		}
                 
     	$(document).on("change",'select[name="part_failure_pn"]',failure_change);
-
+    	
 		function failure_change(){
             var value = $('select[name="part_failure_pn"] option:selected').val();
 			if (value!="") {
