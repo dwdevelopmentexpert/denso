@@ -95,23 +95,29 @@
 					</td>
 				</tr> -->
 				<tr>
-					<td><?php echo lang('create_car_model'); ?><span class="required">*</span></td>
-					<td>
-						<select name="car_model" class="req_field">
-							<option value=""><?php echo lang('create_general_select'); ?></option>
-						</select>
-					</td>
-					<td><?php echo lang('create_frame_number'); ?><span class="required">*</span></td>
-                    <td style="white-space: nowrap;">
-                        <input type="text" name="frame_no" placeholder="<?php echo lang('create_frame_number'); ?>" class="req_field">
-                        <label><input type="checkbox" id="frame_indiscernible"/><?php echo lang('create_indiscernible'); ?></label>
-                    </td>
-					<td><?php echo lang('create_engine_number'); ?><span class="required">*</span></td>
-					<td style="white-space: nowrap;">
-                        <input type="text" name="engine_no" placeholder="<?php echo lang('create_engine_number'); ?>" class="req_field">
-                        <label><input type="checkbox" id="engine_indiscernible"/><?php echo lang('create_indiscernible'); ?></label>
-                    </td>
-				</tr>
+                                    <td><?php echo lang('create_car_model'); ?><span class="required">*</span></td>
+                                    <td>
+                                        <select name="car_model" class="req_field">
+                                            <option value=""><?php echo lang('create_general_select'); ?></option>
+                                        </select>
+                                    </td>
+                                    <td><?php echo lang('create_frame_number'); ?><span class="required">*</span></td>
+                                    <td style="white-space: nowrap;">
+                                        <input type="text" name="frame_no" placeholder="<?php echo lang('create_frame_number'); ?>" class="req_field">
+                                    </td>
+                                    <td><?php echo lang('create_engine_number'); ?><span class="required">*</span></td>
+                                    <td style="white-space: nowrap;">
+                                        <input type="text" name="engine_no" placeholder="<?php echo lang('create_engine_number'); ?>" class="req_field">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td><label><input type="checkbox" id="frame_indiscernible"/><?php echo lang('create_indiscernible'); ?></label></td>
+                                    <td></td>
+                                    <td><label><input type="checkbox" id="engine_indiscernible"/><?php echo lang('create_indiscernible'); ?></label></td>
+                                </tr>
 				<tr class="empty_row"></tr>
 				<tr>
 					<td><?php echo lang('create_engine_model'); ?><span class="required">*</span></td>
@@ -140,15 +146,15 @@
                 </tr>
 				<tr class="empty_row"></tr>
 				<tr>
-					<td><?php echo lang('create_warranty_condition'); ?></td>
-					<td>
-						<label><input type="radio" name="warranty" value="in" disabled> <?php echo lang('create_warranty_in'); ?></input></label>
-						<label><input type="radio" name="warranty" value="out" disabled> <?php echo lang('create_warranty_out'); ?></input></label>
-					</td>
-					<td></td>
-					<td></td>
-					<td colspan="2"><?php //echo lang('create_status_of_ros'); ?></td>
-				</tr>
+                                    <td><?php echo lang('create_warranty_condition'); ?></td>
+                                    <td colspan="3">
+                                        <label><input type="radio" name="warranty" value="in" disabled> <?php echo lang('create_warranty_in'); ?></input></label>
+                                        <label><input type="radio" name="warranty" value="out" disabled> <?php echo lang('create_warranty_out'); ?></input></label>
+                                    </td>
+
+
+                                    <td colspan="2"><?php //echo lang('create_status_of_ros'); ?></td>
+                                </tr>
 				<tr class="empty_row"></tr>
 				<tr>
 					<td><?php echo lang('create_car_problem'); ?><span class="required">*</span></td>

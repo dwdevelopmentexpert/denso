@@ -139,7 +139,162 @@ class Create extends CI_Controller {
                         goto error;
                     break;
                 }
+                $part_type = $this->session->userdata('pumpinj');
+                if ($part_type=='pumpinjector'){
+                        $p_ex_pn = $PostData['part_exchange_pn'];
+                        $p_fl_pn = $PostData['part_failure_pn'];
+                        
+                        $fn_sn1 = $PostData['failure_sn_1'];
+                        $fn_sn2 = $PostData['new_sn_1'];
+                        $fn_sn3 = $PostData['remark'];
+                        
+                        $PostData['part_exchange_pn'] = $PostData['part_exchange_pn_inj'];
+                        $PostData['part_failure_pn'] = $PostData['part_failure_pn_inj'];
+                        
+                        $PostData['failure_sn_1'] = $PostData['failure_sn_1_inj'];
+                        $PostData['new_sn_1'] = $PostData['new_sn_1_inj'];
+                        $PostData['remark'] = $PostData['remark_inj'];
+                        
+                        unset($PostData['part_exchange_pn_inj']);
+                        unset($PostData['part_failure_pn_inj']);
+                        
+                        unset($PostData['failure_sn_1_inj']);
+                        unset($PostData['new_sn_1_inj']);
+                        unset($PostData['remark_inj']);
+                        
+                        switch ($action) {
+                            case 'add':
+                                if (isset($PostData['ros_no'])) {
+                                    $ros_no = $PostData['ros_no'];
+                                    $this->create_model->deletedraft($ros_no);
+                                }
+                                $last_ros_no = $this->create_model->getlast($table, $ros_prefix);
+                                $runnin_number = explode("-", $last_ros_no);
+                                $runnin_number = $runnin_number[1];
+                                $runnin_number = sprintf("%03d",$runnin_number+1);
+                                $PostData['ros_no'] = $ros_prefix."-".($runnin_number)."-".(date('y'));
+                                $PostData['created_by'] = $this->session->userdata("sd_id");
+                                $PostData['ext_field'] = "injector";
+                                
+                                $return['code'] = $this->create_model->create($PostData,$table)?1:0;
+                                if ($return['code'] === 1 AND $draft === "false") {
+                                        $sd_name = $this->session->userdata("full_name");
+                                        $part_type = $this->create_model->getpartnamebyid($PostData['part_id']);
+                                    $to = "densoth.ros@gmail.com";
+                                    // $to = "yanksin@gmail.com";
+                                    $subject = "**[New IMV] New Request ROS No.".$PostData['ros_no']." has been added.";
+                                                        $message = "A new request has been made in the ROS system.
+                                                                                <br/>
+                                                                                <b>Ros. No. ".$PostData['ros_no']."
+                                                                                <br/>
+                                                                                From SD Name: ".$sd_name."
+                                                                                <br/>
+                                                                                Part Type: ".$part_type."</b>
+                                                                                <br/><br/>
+                                                                                To view it, log in to the system".
+                                                                    " at ".anchor(str_replace("densoIMV", "densoIMV_backend", base_url())."index.php/manage/ros/".$PostData['ros_no'],"this link")."";
+                                                        $message = wordwrap($message, 70, "\r\n");
+                                                        send_email($to,$subject,$message);
+                                }
+                                $log_ros_no = $PostData['ros_no'];
+                                $return['ross'] = $PostData['ros_no'];
+                            break;
 
+                            case 'update':
+                                $PostData['ext_field'] = "injector";
+                                $this->session->set_userdata('ext_field','injector');
+                                $PostData['updated_time'] = date('Y-m-d H:i:s');
+                                $PostData['ext_field'] = "injector";
+                                $ros_no = $PostData['ros_no'];
+                                $return['code'] = $this->create_model->update($PostData,$table)?1:0;
+                                $return['ross'] = $ros_no;
+                                $log_ros_no = $ros_no;
+                            break;
+
+                            case 'cancel':
+                                $PostData['updated_time'] = date('Y-m-d H:i:s');
+                                $PostData['status'] = "Cancel";
+                                $log_status = "Cancel";
+                                $ros_no = $PostData['ros_no'];
+                                $log_ros_no = $PostData['ros_no'];
+                                $return['code'] = $this->create_model->update($PostData,$table)?1:0;
+                                $return['ross'] = $ros_no;
+                            break;
+                            default:
+                                goto error;
+                            break;
+                        }
+                        
+                        $PostData['part_exchange_pn']= $p_ex_pn;
+                        $PostData['part_failure_pn'] = $p_fl_pn;
+                        
+                        $PostData['failure_sn_1'] = $fn_sn1;
+                        $PostData['new_sn_1'] = $fn_sn2;
+                        $PostData['remark'] = $fn_sn3;
+                        $PostData['ext_field'] = "pump";
+                        
+                        switch ($action) {
+                            case 'add':
+                                if (isset($PostData['ros_no'])) {
+                                    $ros_no = $PostData['ros_no'];
+                                    $this->create_model->deletedraft($ros_no);
+                                }
+                                $last_ros_no = $this->create_model->getlast($table, $ros_prefix);
+                                $runnin_number = explode("-", $last_ros_no);
+                                $runnin_number = $runnin_number[1];
+                                $runnin_number = sprintf("%03d",$runnin_number+1);
+                                $PostData['ros_no'] = $ros_prefix."-".($runnin_number)."-".(date('y'));
+                                $PostData['created_by'] = $this->session->userdata("sd_id");
+
+
+
+                                $return['code'] = $this->create_model->create($PostData,$table)?1:0;
+                                if ($return['code'] === 1 AND $draft === "false") {
+                                        $sd_name = $this->session->userdata("full_name");
+                                        $part_type = $this->create_model->getpartnamebyid($PostData['part_id']);
+                                    $to = "densoth.ros@gmail.com";
+                                    // $to = "yanksin@gmail.com";
+                                    $subject = "**[New IMV] New Request ROS No.".$PostData['ros_no']." has been added.";
+                                                        $message = "A new request has been made in the ROS system.
+                                                                                <br/>
+                                                                                <b>Ros. No. ".$PostData['ros_no']."
+                                                                                <br/>
+                                                                                From SD Name: ".$sd_name."
+                                                                                <br/>
+                                                                                Part Type: ".$part_type."</b>
+                                                                                <br/><br/>
+                                                                                To view it, log in to the system".
+                                                                    " at ".anchor(str_replace("densoIMV", "densoIMV_backend", base_url())."index.php/manage/ros/".$PostData['ros_no'],"this link")."";
+                                                        $message = wordwrap($message, 70, "\r\n");
+                                                        send_email($to,$subject,$message);
+                                }
+                                $log_ros_no = $PostData['ros_no'];
+                                $return['ross'] = $PostData['ros_no'];
+                            break;
+
+                            case 'update':
+                                $PostData['updated_time'] = date('Y-m-d H:i:s');
+                                $ros_no = $PostData['ros_no'];
+                                $return['code'] = $this->create_model->update($PostData,$table)?1:0;
+                                $return['ross'] = $ros_no;
+                                $log_ros_no = $ros_no;
+                            break;
+
+                            case 'cancel':
+                                $PostData['updated_time'] = date('Y-m-d H:i:s');
+                                $PostData['status'] = "Cancel";
+                                $log_status = "Cancel";
+                                $ros_no = $PostData['ros_no'];
+                                $log_ros_no = $PostData['ros_no'];
+                                $return['code'] = $this->create_model->update($PostData,$table)?1:0;
+                                $return['ross'] = $ros_no;
+                            break;
+                            default:
+                                goto error;
+                            break;
+                        }
+                }
+                else{
                 switch ($action) {
                     case 'add':
                         if (isset($PostData['ros_no'])) {
@@ -152,6 +307,9 @@ class Create extends CI_Controller {
                         $runnin_number = sprintf("%03d",$runnin_number+1);
                         $PostData['ros_no'] = $ros_prefix."-".($runnin_number)."-".(date('y'));
                         $PostData['created_by'] = $this->session->userdata("sd_id");
+                        
+                        
+                        
                         $return['code'] = $this->create_model->create($PostData,$table)?1:0;
                         if ($return['code'] === 1 AND $draft === "false") {
                         	$sd_name = $this->session->userdata("full_name");
@@ -196,6 +354,7 @@ class Create extends CI_Controller {
                     default:
                         goto error;
                     break;
+                }
                 }
                 trace_status($log_ros_no,$log_status);
                 $return['message'] = "Data recieved";
@@ -318,7 +477,13 @@ class Create extends CI_Controller {
 			if ($this->session->userdata("logged_in")) {
 				if ($this->input->post("maker_id")) {
 					$PostData = $this->input->post();
-					$models = $this->create_model->getcarmodels($PostData);
+					if($this->input->post("part_type") == "pumpinjector"){
+                                            $models = $this->create_model->getcarmodelsPumpInject($PostData);
+                                        }else{
+                                            $models = $this->create_model->getcarmodels($PostData);
+                                        }
+
+                                        //$models = $this->create_model->getcarmodels($PostData);
 					$return['code'] = 200;
 					$return['message'] = "<option value=''>Select</option>";
 					foreach ($models as $key => $row) {
@@ -346,7 +511,13 @@ class Create extends CI_Controller {
 			if ($this->session->userdata("logged_in")) {
 				if ($this->input->post("maker_id")) {
 					$PostData = $this->input->post();
-					$models = $this->create_model->getenginemodels($PostData);
+                                        if($this->input->post("part_type") == "pumpinjector"){
+                                            $models = $this->create_model->getenginemodelsPumpInject($PostData);
+                                        }else{
+                                            $models = $this->create_model->getenginemodels($PostData);
+                                        }
+                                            
+					
 					$return['code'] = 200;
 					$return['message'] = "<option value=''>Select</option>";
 					foreach ($models as $key => $row) {
@@ -368,13 +539,18 @@ class Create extends CI_Controller {
 		echo json_encode($return);
 	}
         
-    public function getfailuremodels()
+        public function getfailuremodels()
 	{
 		if ($this->input->is_ajax_request()) {
 			if ($this->session->userdata("logged_in")) {
 				if ($this->input->post("engine_model")) {
 					$PostData = $this->input->post();
-					$models = $this->create_model->getfailuremodels($PostData);
+                                        if($this->input->post("part_type") == "pumpinjector"){
+                                            $models = $this->create_model->getfailuremodelsPumpInject($PostData);
+                                        }else{
+                                            $models = $this->create_model->getfailuremodels($PostData);
+                                        }
+					
 					$return['code'] = 200;
 					$return['message'] = "<option value=''>Select</option>";
 					foreach ($models as $key => $row) {
@@ -396,13 +572,18 @@ class Create extends CI_Controller {
 		echo json_encode($return);
 	}
         
-    public function getexchangemodels()
+        public function getexchangemodels()
 	{
 		if ($this->input->is_ajax_request()) {
 			if ($this->session->userdata("logged_in")) {
 				if ($this->input->post("car_maker_PN")) {
 					$PostData = $this->input->post();
-					$models = $this->create_model->getexchangemodels($PostData);
+                                        if($this->input->post("part_type") == "pumpinjector"){
+                                            $models = $this->create_model->getexchangemodelsPumpInject($PostData);
+                                        }else{
+                                            $models = $this->create_model->getexchangemodels($PostData);
+                                        }
+					
 					if (!empty($models)) {
 						$return['code'] = 200;
 						foreach ($models as $key => $row) {
@@ -500,7 +681,9 @@ class Create extends CI_Controller {
 	}
 
 	public function searchform(){
+			$this->load->view('header_view');
 			$this->load->view('search_view');
+			$this->load->view('footer_view');
 	}
 	
     public function printform(){
@@ -625,6 +808,9 @@ class Create extends CI_Controller {
 		if ($this->input->is_ajax_request()) {
 			if ($this->session->userdata("logged_in")) {
 				if ($this->input->post("part_type")) {
+                                        if($this->input->post("part_type") == "pumpinjector"){
+                                            $this->session->set_userdata('pumpinj','pumpinjector');
+                                        }
 					$PostData = $this->input->post();
 					try {
 						$return['tabs'] = $this->load->view($PostData['part_type']."_tabheading_view","",true);
@@ -675,48 +861,136 @@ class Create extends CI_Controller {
         
         public function doSearchAction(){
         	
-        	$maker_id = $this->input->post('CarMaker');
-        	$car_model = $this->input->post('CarModel');
-        	$status = "";
-        	$filter = "TOYOTA";
-        	//$return = $this->create_model->getrosfiltered($this->session->userdata("sd_id"),$status,0, 10, $filter);
-        		$query = "select distinct(model.car_model),model.maker_id,model.engine_model,model.car_maker_PN,model.exchange_PN from car_makers c
-        					left join (
+        	if ($this->session->userdata('logged_in')) {
+        	
+	        	$maker_id = $this->input->post('CarMaker');
+	        	$model_name = $this->input->post('ModelName');
+	        	$model_code = $this->input->post('ModelCode');
+	        	$car_maker_pn = $this->input->post('CarMakerPN');
+	        	$DensoPartNo = $this->input->post('DensoPartNo');
+	        	$KeyWords = $this->input->post('KeyWords');
+	        	$status = "";
+	        	$per_page = 20;
+	        	
+	        	$offset = $this->input->get("record");
+	        	if ($offset == "" OR $offset%$per_page!=0) {
+	        		$offset = 0;
+	        	}
+	        	
+	        	$return = $this->create_model->getCarModelfiltered($maker_id,$model_name,$model_code,$car_maker_pn,$DensoPartNo,$KeyWords,$offset, $per_page);
+	        	$data['records'] = $return['records'];
+	        	$data['maker_ids'] = $maker_id;
+	        	$data['model_names'] = $model_name;
+	        	$data['model_codes'] = $model_code;
+	        	$total_rows = $return['total_rows'];
+	
+	        	//config the pagination library.
+	        	$config['base_url'] = base_url().'index.php/create';
+	        	$config['total_rows'] = $total_rows;
+	        	$config['per_page'] = $per_page;
+	        	$config['page_query_string'] = TRUE;
+	        	$config['first_link'] = 'First';
+	        	$config['last_link'] = 'Last';
+	        	$config['query_string_segment'] = 'record';
+	        	
+	        	//Initialize the pagination library with above configurations.
+	        	$this->pagination->initialize($config);
+	        	
+	        	$this->load->view('header_view');
+	        	$this->load->view('search_view',$data);
+	        	$this->load->view('footer_view');
+	        	
+        	} else{
+        		redirect("home");
+        	}
+        }
+        
+        public function fetchallcarmodel(){
+
+        	if(!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+        		$maker_id = $this->input->post('CarMaker');
+        		
+        		$orCondition = "";
+        		if(!isset($maker_id) || empty($maker_id)){
+        			$orCondition = " or model.maker_id like '%' ";
+        		}
+        
+        		$query = "select distinct(model.car_model) from (
 		        				select * from pump_parts pp
 		        				union all
 		        				select * from compressor_parts cp
 		        				union all
-		        				select * from injector_parts
+		        				select * from injector_parts ip
 		        				union all
-		        				select * from alternator_parts) model
-		        			on c.maker_id = model.maker_id
-		        		where c.maker_id = '".$maker_id."'"." order by model.car_model asc";
-        		
-        		
-        	$return['records'] =  $this->db->query($query)->result_array();
-        	$return['total_rows'] = $this->db->query($query)->num_rows();
+		        				select * from alternator_parts ap) model
+		        		where model.maker_id = '".$maker_id."' ".$orCondition.
+        				" "." order by model.car_model asc";
         
-        	$data['records'] = $return['records'];
-        	$data['total_rows'] = $return['total_rows'];
-        	
-        	$total_rows = $return['total_rows'];
+        		$result =  $this->db->query($query)->result_array();
+        		echo json_encode($result);
+        	}
+        }
 
-        	//config the pagination library.
-        	$config['base_url'] = base_url().'index.php/create';
-        	$config['total_rows'] = $total_rows;
-        	// $config['use_page_numbers'] = TRUE;
-        	$config['per_page'] = 30;
-        	$config['page_query_string'] = TRUE;
-        	$config['first_link'] = 'First';
-        	$config['last_link'] = 'Last';
-        	$config['query_string_segment'] = 'record';
-        	
-        	//Initialize the pagination library with above configurations.
-        	$this->pagination->initialize($config);
-        	
-        	//$data['table_makers'] = $this->create_model->getallmakers();        	
-        	$this->load->view('search_view',$data);
-        	
+        public function fetchallcarengine(){
+        
+        	if(!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+        	    $maker_id = $this->input->post('CarMaker');
+        		$car_model = $this->input->post('ModelName');
+        
+        		$orCondition = "";
+        		$condition = "";
+        		
+			if ((isset($maker_id) && !empty($maker_id)) && (!isset($car_model) || empty($car_model))) {
+				$condition = " or model.maker_id = '" . $maker_id . "' ";
+			} elseif ((!isset($maker_id) || empty($maker_id)) && (isset($car_model) && !empty($car_model))) {
+				$condition = " or model.car_model = '" . $car_model . "' ";
+			} else{
+				
+				if ((!isset($maker_id) || empty($maker_id)) && (!isset($car_model) || empty($car_model))) {
+					$orCondition = " or trim(model.car_model) like '%' ";
+				}
+			}
+        
+        		$query = "select distinct(model.engine_model) from (
+		        				select * from pump_parts pp
+		        				union all
+		        				select * from compressor_parts cp
+		        				union all
+		        				select * from injector_parts ip
+		        				union all
+		        				select * from alternator_parts ap) model
+		        		where (trim(model.car_model) = '".trim($car_model)."' ".$condition.") ".
+		        		$orCondition." "." order by model.engine_model asc";
+        
+        		$result =  $this->db->query($query)->result_array();
+        		echo json_encode($result);
+        	}
+        }
+
+        public function fetchallcarengine_bycarmaker(){
+        
+        	if(!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+        		$maker_id = $this->input->post('CarMaker');
+        
+        		$orCondition = "";
+        		if(!isset($maker_id) || empty($maker_id)){
+        			$orCondition = " or trim(model.maker_id) like '%' ";
+        		}
+        
+        		$query = "select distinct(model.engine_model) from (
+		        				select * from pump_parts pp
+		        				union all
+		        				select * from compressor_parts cp
+		        				union all
+		        				select * from injector_parts ip
+		        				union all
+		        				select * from alternator_parts ap) model
+		        		where trim(model.maker_id) = '".trim($maker_id)."' ".$orCondition.
+        		        		" "." order by model.engine_model asc";
+        
+        		$result =  $this->db->query($query)->result_array();
+        		echo json_encode($result);
+        	}
         }
 }
 

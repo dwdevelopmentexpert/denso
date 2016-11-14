@@ -896,7 +896,9 @@
 			var data = form.serialize();
 			var draft = button.attr("id")=="frm_submit"?"false":"true";
 			var action = button.data("action");
-            if($('select[name="part_failure_pn"]').val()=='' && draft == 'false' && !$('select[name="part_failure_pn"]').parents('tr').hasClass('hidden')){
+            if($('select[name="part_failure_pn"]').val()=='' && draft == 'false' && !$('select[name="part_failure_pn"]').parents('tr').hasClass('hidden')
+              || $('select[name="part_failure_pn_inj"]').val()=='' && draft == 'false' && !$('select[name="part_failure_pn_inj"]').parents('tr').hasClass('hidden')      
+              ){
                 $('select[name="part_failure_pn"]').addClass("error");
                 alert("VALIDATION ERROR");
                 hideLoader();
@@ -904,6 +906,7 @@
             }
             else{
                 $('select[name="part_failure_pn"]').removeClass("error");
+                $('select[name="part_failure_pn_inj"]').removeClass("error");
             }
 			var maker_name = $('#maker:checked').parent('label').text();
 			var inputs = form.find("input, select");
@@ -923,9 +926,9 @@
 					}
 				},
 				error: function(one, two, three){
-					//console.log(one);
-					//console.log(two);
-					//console.log(three);
+					console.log(one);
+					console.log(two);
+					console.log(three);
 					alert("Can't contact the server right now.");
 				},
 				complete: function(){
@@ -1132,6 +1135,7 @@
 						//console.log(data);
 						if (data.code == "200") {
                             $('select[name="part_failure_pn"]').html(data.message);
+                            $('select[name="part_failure_pn_inj"]').html(data.message);
 						} else{
 							$('select[name="part_failure_pn"]').html("<option value=''>Select</option>");
 						}
@@ -1166,6 +1170,40 @@
                             $("#part_code").html("<input type='hidden' name='part_code' value='"+data.part_code+"' />");
 						} else{
 							$('input[name="part_exchange_pn"]').val('');
+							$("#part_code").html("");
+							alert(data.message);
+						}
+					},
+					error: function(one, two, three){
+						//console.log(one);
+						//console.log(two);
+						//console.log(three);
+					},
+					complete: function(){
+						// $(".part_type").removeAttr('disabled');
+					}
+				});
+			}
+		}
+                
+                $(document).on("change",'select[name="part_failure_pn_inj"]',failure_change1);
+    	
+		function failure_change1(){
+            var value = $('select[name="part_failure_pn_inj"] option:selected').val();
+			if (value!="") {
+				$.ajax({
+					url: "<?php echo base_url(); ?>index.php/create/getexchangemodels",
+					type: "POST",
+					data: "maker_id="+($("#maker option:selected").val())+"&part_type="+($(".part_type").find(":selected").data("prefix"))+"&car_model="+$('select[name="car_model"] option:selected').val()+"&engine_model="+$('select[name="engine_model"] option:selected').val()+"&car_maker_PN="+value,
+					dataType: "json",
+					async: false,
+					success: function(data){
+						//console.log(data);
+						if (data.code == "200") {
+                            $("input[name='part_exchange_pn_inj']").val(data.message);
+                            $("#part_code").html("<input type='hidden' name='part_code' value='"+data.part_code+"' />");
+						} else{
+							$('input[name="part_exchange_pn_inj"]').val('');
 							$("#part_code").html("");
 							alert(data.message);
 						}

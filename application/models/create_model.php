@@ -184,6 +184,28 @@ class Create_model extends CI_Model {
 
 		return $this->db->query($query)->result_array();
 	}
+        
+        public function getcarmodelsPumpInject($PostData)
+	{
+		$maker_id = $PostData['maker_id'];
+		$query =     "select distinct(car_model) from car_makers c
+
+                                left join (
+
+                                    select * from pump_parts pp
+
+                                    union all
+
+                                    select * from injector_parts) em
+
+                                on c.maker_id = em.maker_id
+
+                            group by car_model,engine_model,c.maker_id
+                            having c.maker_id = '$maker_id'
+                            order by engine_model asc";
+
+		return $this->db->query($query)->result_array();
+	}
 
 	public function getenginemodels($PostData)
 	{
@@ -195,7 +217,26 @@ class Create_model extends CI_Model {
 		return $this->db->query($query)->result_array();
 	}
         
-    public function getfailuremodels($PostData)
+        public function getenginemodelsPumpInject($PostData)
+	{
+		
+		$car_model = $PostData['car_model'];
+		
+                
+                $query = "select distinct(engine_model) from car_makers c
+                                left join (
+                                            select * from pump_parts pp
+                                            union all
+                                            select * from injector_parts) em
+                                            on c.maker_id = em.maker_id
+                            group by car_model,engine_model
+                            having car_model = '$car_model'
+                            order by engine_model asc";
+
+		return $this->db->query($query)->result_array();
+	}
+        
+        public function getfailuremodels($PostData)
 	{
 		$table = $PostData['part_type']."_parts";
 		$maker_id = $PostData['maker_id'];
@@ -206,7 +247,24 @@ class Create_model extends CI_Model {
 		return $this->db->query($query)->result_array();
 	}
         
-    public function getexchangemodels($PostData)
+        public function getfailuremodelsPumpInject($PostData)
+	{
+		$car_model = $PostData['car_model'];
+                $engine_model = $PostData['engine_model'];
+		//$query = "SELECT DISTINCT car_maker_PN FROM $table WHERE maker_id = '$maker_id' AND car_model = '$car_model' AND engine_model = '$engine_model'";
+                $query = "select distinct(car_maker_PN) from car_makers c
+                                left join (
+                                            select * from pump_parts pp
+                                            union all
+                                            select * from injector_parts) em
+                                            on c.maker_id = em.maker_id
+                            
+                            where car_model = '$car_model' AND engine_model = '$engine_model'
+                            order by engine_model asc";
+		return $this->db->query($query)->result_array();
+	}
+        
+        public function getexchangemodels($PostData)
 	{
 		$table = $PostData['part_type']."_parts";
 		$maker_id = $PostData['maker_id'];
@@ -214,6 +272,24 @@ class Create_model extends CI_Model {
         $engine_model = $PostData['engine_model'];
         $car_maker_PN = $PostData['car_maker_PN'];
 		$query = "SELECT DISTINCT exchange_PN, part_code FROM $table WHERE maker_id = '$maker_id' AND car_model = '$car_model' AND engine_model = '$engine_model' AND car_maker_PN = '$car_maker_PN'";
+
+		return $this->db->query($query)->result_array();
+	}
+        
+        public function getexchangemodelsPumpInject($PostData)
+	{
+		$car_model = $PostData['car_model'];
+                $engine_model = $PostData['engine_model'];
+                $car_maker_PN = $PostData['car_maker_PN'];
+		$query = "select exchange_PN, part_code from car_makers c
+                                left join (
+                                            select * from pump_parts pp
+                                            union all
+                                            select * from injector_parts) em
+                                            on c.maker_id = em.maker_id
+                            
+                            where car_model = '$car_model' AND engine_model = '$engine_model' AND car_maker_PN = '$car_maker_PN'
+                            order by engine_model asc";
 
 		return $this->db->query($query)->result_array();
 	}
@@ -340,6 +416,97 @@ class Create_model extends CI_Model {
 			return $return;
 		} else{
 			return FALSE;
+		}
+	}
+	
+	public function getCarModelfiltered($maker_id,$model_name,$model_code,$car_maker_pn,$DensoPartNo,$KeyWords,$offset, $per_page)
+	{
+	
+		//$maker_id
+		if (isset($maker_id) && !empty($maker_id)) {
+			$filter_query = " and cm.maker_id = '".$maker_id."'";
+		} else {
+			$filter_query = " and cm.maker_id like '%'";
+		}
+	
+		//$model_name
+		if (isset($model_name) && !empty($model_name)) {
+			$filter_query .= " and model.car_model = '".$model_name."'";
+		}
+	
+		//$model_code
+		if (isset($model_code) && !empty($model_code)) {
+			$filter_query .= " and model.engine_model = '".$model_code."'";
+		}
+	
+		//$car_maker_pn
+		if (isset($car_maker_pn) && !empty($car_maker_pn)) {
+			$filter_query .= " and model.car_maker_PN = '".$car_maker_pn."'";
+		}
+	
+		//$DensoPartNo
+		if (isset($DensoPartNo) && !empty($DensoPartNo)) {
+			$filter_query .= " and model.exchange_PN = '".$DensoPartNo."'";
+		}
+	
+		//$KeyWords
+		if (isset($KeyWords) && !empty($KeyWords)) {
+			$filter_query .= " and (maker_en like '%".$KeyWords."%'";
+			$filter_query .= " or maker_th like '%".$KeyWords."%'";
+			$filter_query .= " or car_model like '%".$KeyWords."%'";
+			$filter_query .= " or model.engine_model like '%".$KeyWords."%'";
+			$filter_query .= " or model.car_maker_PN like '%".$KeyWords."%'";
+			$filter_query .= " or model.exchange_PN like '%".$KeyWords."%')";
+		}
+	
+	
+		//$select = "created_time,repair_date,dealer.".lang('manage_dealer_name')." AS dealer_".lang('manage_dealer_name').",CONCAT('<a href=''manage/ros/',ros_no,'''>',ros_no,'</a>') AS ros_no,ros_no AS raw_ros,service_dealer.".lang("manage_sd_name")." AS service_dealer,warranty, car_model, part_types.".lang("manage_part_type_column").", car_makers.".lang("manage_maker_name").", ros_form.part_failure_pn AS part_no, ros_form.status_approve_date AS ApproveDate, ros_form.status_delivery_date AS Delivery, ros_form.status_core_return_date AS Core, status";
+		$additional = " LIMIT $per_page OFFSET $offset";
+		$query = "  select car_model,model.maker_id,cm.maker_en as maker_en,cm.maker_th,engine_model,car_maker_PN,exchange_PN
+						from (
+						select * from pump_parts pp
+						union all
+						select * from compressor_parts cp
+						union all
+						select * from injector_parts ip
+						union all
+						select * from alternator_parts ap) model
+					join car_makers cm on cm.maker_id = model.maker_id
+					".$filter_query." order by model.maker_id,model.car_model,model.engine_model,model.car_maker_PN,model.exchange_PN asc ";
+	
+		$result = $this->db->query($query.$additional);
+	
+		if ($result->num_rows() >= 1) {
+			$return['records'] = $result->result_array();
+			$return['total_rows'] = $this->db->query($query)->num_rows();
+		}
+	
+		if (!empty($return)) {
+			return $return;
+		} else{
+			return FALSE;
+		}
+	}
+	
+	public function getEmailGroup($maker_id,$car_model)
+	{
+		$return = $this->db->get_where('car_model_notification', array('maker_id' => $maker_id, 'car_model' => $car_model))->row_array();
+		
+		if (!empty($return)) {
+			return $return;
+		} else{
+			return false;
+		}
+	}
+	
+	public function getemailTemplate($maker_id,$car_model)
+	{
+		$return = $this->db->get_where('car_model_notification cn', array('cn.maker_id' => $maker_id, 'cn.car_model' => $car_model))->row_array();
+	
+		if (!empty($return)) {
+			return $return;
+		} else{
+			return false;
 		}
 	}
 
