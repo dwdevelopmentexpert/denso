@@ -145,22 +145,64 @@ class Create extends CI_Controller {
                         $p_fl_pn = $PostData['part_failure_pn'];
                         
                         $fn_sn1 = $PostData['failure_sn_1'];
-                        $fn_sn2 = $PostData['new_sn_1'];
-                        $fn_sn3 = $PostData['remark'];
+                        $new_sn_1 = $PostData['new_sn_1'];
+                        $remark = $PostData['remark'];
+                        
+                        $failure_sn_11 = $PostData['failure_sn_11'];
+                        $failure_sn_22 = $PostData['failure_sn_22'];
+                        $failure_sn_33 = $PostData['failure_sn_33'];
+                        $failure_sn_44 = $PostData['failure_sn_44'];
+                        $failure_sn_55 = $PostData['failure_sn_55'];
+                        $failure_sn_66 = $PostData['failure_sn_66'];
+                        
+                        $new_sn_11 = $PostData['new_sn_11'];
+                        $new_sn_22 = $PostData['new_sn_22'];
+                        $new_sn_33 = $PostData['new_sn_33'];
+                        $new_sn_44 = $PostData['new_sn_44'];
+                        $new_sn_55 = $PostData['new_sn_55'];
+                        $new_sn_66 = $PostData['new_sn_66'];
+                        
+
+                        $remark1 = $PostData['remark1'];
                         
                         $PostData['part_exchange_pn'] = $PostData['part_exchange_pn_inj'];
                         $PostData['part_failure_pn'] = $PostData['part_failure_pn_inj'];
                         
-                        $PostData['failure_sn_1'] = $PostData['failure_sn_1_inj'];
-                        $PostData['new_sn_1'] = $PostData['new_sn_1_inj'];
-                        $PostData['remark'] = $PostData['remark_inj'];
+                        $PostData['failure_sn_1'] = $failure_sn_11;
+                        $PostData['failure_sn_2'] = $failure_sn_22;
+                        $PostData['failure_sn_3'] = $failure_sn_33;
+                        $PostData['failure_sn_4'] = $failure_sn_44;
+                        $PostData['failure_sn_5'] = $failure_sn_55;
+                        $PostData['failure_sn_6'] = $failure_sn_66;
+                        
+                        
+                        $PostData['new_sn_1'] = $new_sn_11;
+                        $PostData['new_sn_2'] = $new_sn_22;
+                        $PostData['new_sn_3'] = $new_sn_33;
+                        $PostData['new_sn_4'] = $new_sn_44;
+                        $PostData['new_sn_5'] = $new_sn_55;
+                        $PostData['new_sn_6'] = $new_sn_66;
+                        
+                        $PostData['remark'] = $remark1;
                         
                         unset($PostData['part_exchange_pn_inj']);
                         unset($PostData['part_failure_pn_inj']);
                         
-                        unset($PostData['failure_sn_1_inj']);
-                        unset($PostData['new_sn_1_inj']);
-                        unset($PostData['remark_inj']);
+                        unset($PostData['failure_sn_11']);
+                        unset($PostData['failure_sn_22']);
+                        unset($PostData['failure_sn_33']);
+                        unset($PostData['failure_sn_44']);
+                        unset($PostData['failure_sn_55']);
+                        unset($PostData['failure_sn_66']);
+                        
+                        unset($PostData['new_sn_11']);
+                        unset($PostData['new_sn_22']);
+                        unset($PostData['new_sn_33']);
+                        unset($PostData['new_sn_44']);
+                        unset($PostData['new_sn_55']);
+                        unset($PostData['new_sn_66']);
+                        
+                        unset($PostData['remark1']);
                         
                         switch ($action) {
                             case 'add':
@@ -180,21 +222,10 @@ class Create extends CI_Controller {
                                 if ($return['code'] === 1 AND $draft === "false") {
                                         $sd_name = $this->session->userdata("full_name");
                                         $part_type = $this->create_model->getpartnamebyid($PostData['part_id']);
-                                    $to = "densoth.ros@gmail.com";
-                                    // $to = "yanksin@gmail.com";
-                                    $subject = "**[New IMV] New Request ROS No.".$PostData['ros_no']." has been added.";
-                                                        $message = "A new request has been made in the ROS system.
-                                                                                <br/>
-                                                                                <b>Ros. No. ".$PostData['ros_no']."
-                                                                                <br/>
-                                                                                From SD Name: ".$sd_name."
-                                                                                <br/>
-                                                                                Part Type: ".$part_type."</b>
-                                                                                <br/><br/>
-                                                                                To view it, log in to the system".
-                                                                    " at ".anchor(str_replace("densoIMV", "densoIMV_backend", base_url())."index.php/manage/ros/".$PostData['ros_no'],"this link")."";
-                                                        $message = wordwrap($message, 70, "\r\n");
-                                                        send_email($to,$subject,$message);
+                                        //---------------------------------------------------------------------------------------------------------
+                                        // Send Email
+                                        $this->sendEmailByCarModel($PostData,$part_type,$sd_name);
+                                        //---------------------------------------------------------------------------------------------------------                                        
                                 }
                                 $log_ros_no = $PostData['ros_no'];
                                 $return['ross'] = $PostData['ros_no'];
@@ -228,10 +259,26 @@ class Create extends CI_Controller {
                         $PostData['part_exchange_pn']= $p_ex_pn;
                         $PostData['part_failure_pn'] = $p_fl_pn;
                         
+                        
                         $PostData['failure_sn_1'] = $fn_sn1;
-                        $PostData['new_sn_1'] = $fn_sn2;
-                        $PostData['remark'] = $fn_sn3;
+                        $PostData['new_sn_1'] = $new_sn_1;
+                        $PostData['remark'] = $remark;
                         $PostData['ext_field'] = "pump";
+                        
+                        unset($PostData['failure_sn_2']);
+                        unset($PostData['failure_sn_3']);
+                        unset($PostData['failure_sn_4']);
+                        unset($PostData['failure_sn_5']);
+                        unset($PostData['failure_sn_6']);
+                        
+                        
+                        unset($PostData['new_sn_2']);
+                        unset($PostData['new_sn_3']);
+                        unset($PostData['new_sn_4']);
+                        unset($PostData['new_sn_5']);
+                        unset($PostData['new_sn_6']);
+                        
+                        unset($PostData['part_quantity']);
                         
                         switch ($action) {
                             case 'add':
@@ -252,21 +299,10 @@ class Create extends CI_Controller {
                                 if ($return['code'] === 1 AND $draft === "false") {
                                         $sd_name = $this->session->userdata("full_name");
                                         $part_type = $this->create_model->getpartnamebyid($PostData['part_id']);
-                                    $to = "densoth.ros@gmail.com";
-                                    // $to = "yanksin@gmail.com";
-                                    $subject = "**[New IMV] New Request ROS No.".$PostData['ros_no']." has been added.";
-                                                        $message = "A new request has been made in the ROS system.
-                                                                                <br/>
-                                                                                <b>Ros. No. ".$PostData['ros_no']."
-                                                                                <br/>
-                                                                                From SD Name: ".$sd_name."
-                                                                                <br/>
-                                                                                Part Type: ".$part_type."</b>
-                                                                                <br/><br/>
-                                                                                To view it, log in to the system".
-                                                                    " at ".anchor(str_replace("densoIMV", "densoIMV_backend", base_url())."index.php/manage/ros/".$PostData['ros_no'],"this link")."";
-                                                        $message = wordwrap($message, 70, "\r\n");
-                                                        send_email($to,$subject,$message);
+                                        //---------------------------------------------------------------------------------------------------------
+                                        // Send Email
+                                        $this->sendEmailByCarModel($PostData,$part_type,$sd_name);
+                                        //---------------------------------------------------------------------------------------------------------
                                 }
                                 $log_ros_no = $PostData['ros_no'];
                                 $return['ross'] = $PostData['ros_no'];
@@ -314,21 +350,12 @@ class Create extends CI_Controller {
                         if ($return['code'] === 1 AND $draft === "false") {
                         	$sd_name = $this->session->userdata("full_name");
                         	$part_type = $this->create_model->getpartnamebyid($PostData['part_id']);
-                            $to = "densoth.ros@gmail.com";
-                            // $to = "yanksin@gmail.com";
-                            $subject = "**[New IMV] New Request ROS No.".$PostData['ros_no']." has been added.";
-					        $message = "A new request has been made in the ROS system.
-					    				<br/>
-					    				<b>Ros. No. ".$PostData['ros_no']."
-					    				<br/>
-					    				From SD Name: ".$sd_name."
-					    				<br/>
-					    				Part Type: ".$part_type."</b>
-					    				<br/><br/>
-					    				To view it, log in to the system".
-					                    " at ".anchor(str_replace("densoIMV", "densoIMV_backend", base_url())."index.php/manage/ros/".$PostData['ros_no'],"this link")."";
-					        $message = wordwrap($message, 70, "\r\n");
-					        send_email($to,$subject,$message);
+                        	
+						//---------------------------------------------------------------------------------------------------------
+						// Send Email
+						$this->sendEmailByCarModel($PostData,$part_type,$sd_name);
+						//---------------------------------------------------------------------------------------------------------					        
+					        
                         }
                         $log_ros_no = $PostData['ros_no'];
                         $return['ross'] = $PostData['ros_no'];
@@ -441,7 +468,11 @@ class Create extends CI_Controller {
                         if ($this->session->userdata("logged_in")) {
 				if ($this->input->post("maker_id")) {
 	                $maker_id = $this->input->post("maker_id");
-	                $dealers = $this->create_model->getdealers($maker_id,$this->session->userdata("sd_id"));
+                        $sd_id1 = $this->input->post("sd_id");
+                        
+                        $this->session->set_userdata('sd_id',$sd_id1);
+	                //$dealers = $this->create_model->getdealers($maker_id,$this->session->userdata("sd_id"));
+                        $dealers = $this->create_model->getdealers($maker_id,$sd_id1);
 	                if (isset($dealers) && !empty($dealers)) {
 	                    $return['code'] = 1;
 	                    $return['message'] = "<option value='' selected>".lang('create_general_select')."</option>";
@@ -477,7 +508,8 @@ class Create extends CI_Controller {
 			if ($this->session->userdata("logged_in")) {
 				if ($this->input->post("maker_id")) {
 					$PostData = $this->input->post();
-					if($this->input->post("part_type") == "pumpinjector"){
+                                        
+					if('pumpinjector' == $this->input->post("part_type")){
                                             $models = $this->create_model->getcarmodelsPumpInject($PostData);
                                         }else{
                                             $models = $this->create_model->getcarmodels($PostData);
@@ -743,6 +775,9 @@ class Create extends CI_Controller {
         else if (intval($part_id) === 4) {
 //            echo "Alternator";
             $this->load->view('printform_alternator_view', $data);
+        }else{
+        	//echo "Pump & Injector";
+        	$this->load->view('printform_view', $data);
         }
     }
 
@@ -752,7 +787,12 @@ class Create extends CI_Controller {
 			if ($this->session->userdata("logged_in")) {
 				if ($this->input->post("part_id")) {
 					$PostData = $this->input->post();
-					$problems = $this->create_model->getcarproblems($PostData);
+                                        if($PostData['part_id'] == '0010'){
+                                            $problems = $this->create_model->getcarproblemsPumpInjector();
+                                        }else{
+                                            $problems = $this->create_model->getcarproblems($PostData);
+                                        }
+					
 					$return['code'] = 200;
 					$return['message'] = "<option value=''>Select</option>";
 					foreach ($problems as $key => $row) {
@@ -885,7 +925,7 @@ class Create extends CI_Controller {
 	        	$total_rows = $return['total_rows'];
 	
 	        	//config the pagination library.
-	        	$config['base_url'] = base_url().'index.php/create';
+	        	$config['base_url'] = base_url().'index.php/create/doSearchAction?';
 	        	$config['total_rows'] = $total_rows;
 	        	$config['per_page'] = $per_page;
 	        	$config['page_query_string'] = TRUE;
@@ -992,6 +1032,69 @@ class Create extends CI_Controller {
         		echo json_encode($result);
         	}
         }
+	public function emailContentMapping($pattern, $text, $PostData,$part_type,$sd_name) {
+		
+		$replaces = array (
+				'part_type' =>$part_type,'sd_name' =>$sd_name,'maker_id' => $PostData ['maker_id'],'dealer_id' => $PostData ['dealer_id'],'part_id' => $PostData ['part_id'],
+				'car_model' => $PostData ['car_model'],'frame_no' => $PostData ['frame_no'],'engine_no' => $PostData ['engine_no'],'engine_model' => $PostData ['engine_model'],
+				'year' => $PostData ['year'],'plate_no' => $PostData ['plate_no'],'repair_date' => $PostData ['repair_date'],'mileage' => $PostData ['mileage'],'warranty' => $PostData ['warranty'],
+				'car_problem' => $PostData ['car_problem'],'car_problem_other' => $PostData ['car_problem_other'],'dtc_code' => $PostData ['dtc_code'],'car_condition' => $PostData ['car_condition'],
+				'fuel_condition' => $PostData ['fuel_condition'],'parts_condition' => $PostData ['parts_condition'],'part_failure_pn' => $PostData ['part_failure_pn'],'part_exchange_pn' => $PostData ['part_exchange_pn'],
+				'failure_sn_1' => $PostData ['failure_sn_1'],'new_sn_1' => $PostData ['new_sn_1'],'remark' => $PostData ['remark'],'ros_no' => $PostData ['ros_no'],'part_quantity' => $PostData ['part_quantity'],
+				'car_condition_other' => $PostData ['car_condition_other'],'fuel_condition_other' => $PostData ['fuel_condition_other'],'parts_condition_other' => $PostData ['parts_condition_other'],
+				'created_time' => $PostData ['created_time'],'status' => $PostData ['status'],'created_by' => $PostData ['created_by'],
+				'base_url' => base_url()
+		);
+		
+		$output = preg_replace_callback ( $pattern, function ($m) use($replaces) {
+			if (isset ( $replaces [$m [1]] )) { // If it exists in our array
+				return $replaces [$m [1]]; // Then replace it from our array
+			} else {
+				return $m [0]; // Otherwise return the whole match (basically we won't change it)
+			}
+		}, $text );
+		
+		return $output;
+	}
+        public function sendEmailByCarModel($PostData,$part_type,$sd_name){
+        	
+        	/*
+	        	$to = "densoth.ros@gmail.com";
+	        	$subject = "**[New IMV] New Request ROS No.".$PostData['ros_no']." has been added.";
+				$message = "A new request has been made in the ROS system.
+						    				<br/>
+						    				<b>Ros. No. ".$PostData['ros_no']."
+						    				<br/>
+						    				From SD Name: ".$sd_name."
+						    				<br/>
+						    				Part Type: ".$part_type."</b>
+						    				<br/><br/>
+						    				To view it, log in to the system"." at ".anchor(str_replace("densoIMV", "densoIMV_backend", base_url())."index.php/manage/ros/".$PostData['ros_no'],"this link")."";
+	        	$message = wordwrap($message, 70, "\r\n");
+        	*/
+        	
+        	$emailGroup = $this->create_model->getEmailGroup($PostData['maker_id'],$PostData['car_model']);
+        	
+        	if(isset($emailGroup) && !empty($emailGroup)){
+        		$pattern = '#{ros_txt:([^}]+)}#';
+        		
+        		$to = $emailGroup['email_group'];
+        		
+        		$emailTemplate = $this->db->get('email_template')->row_array();
+        		$subject = $this->emailContentMapping($pattern,$emailTemplate['subject'],$PostData,$part_type,$sd_name);
+        		$arr = explode('|',trim($emailTemplate['sender']));
+        		$from = $arr[0];
+        		$as = $arr[1];
+        		 
+        		$message= $emailTemplate['email_content'];
+
+        		$message = $this->emailContentMapping($pattern,$message,$PostData,$part_type,$sd_name);
+        		
+        		/* Send Mail */
+        		send_email($to,$subject,$message,$from,$as);
+        	}
+        }
+        
 }
 
 /* End of file create.php */

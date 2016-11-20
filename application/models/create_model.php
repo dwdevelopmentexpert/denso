@@ -24,6 +24,16 @@ class Create_model extends CI_Model {
 		$table = "car_problems";
 		return $this->db->select($select)->where($conds)->get($table)->result_array();
 	}
+        
+        public function getcarproblemsPumpInjector()
+	{
+		$table = "car_problems";
+		$select = 'id,'.lang('create_problems_column');
+		
+		//$query = "SELECT $select FROM $table WHERE part_id in( '0001', '0002') ";
+		$query = "SELECT $select FROM $table WHERE part_id in( '0001') ";
+		return $this->db->query($query)->result_array();
+        }
 
 	public function getsdinfo($sd_id)
 	{
